@@ -405,7 +405,8 @@ create_simulation_set <- function(outdir = "simulations", mut_per_sim = 5000,
 
     print("Simulation type 0b: two clusters")
 	# signature does not change, but CCFs do
-	n_simulations = 100
+
+	n_simulations = 3
 
 	for (sim_id in 1:n_simulations) {
 		sig_activities = list()
