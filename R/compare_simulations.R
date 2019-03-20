@@ -19,7 +19,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   sel <- grep(x = simulations, "^Simulation")
   simulations <- simulations[sel]
 
-  tracksig_dir = "TS_ccfLikelihood_results/"
+  tracksig_dir = resultsDir
 
   list[res, gt_exp_l, estim_exp_l] <- TrackSig:::compare_simulation_results(
       simulations, ground_truth_dir = dataDir,
