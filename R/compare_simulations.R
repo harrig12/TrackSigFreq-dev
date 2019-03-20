@@ -1,4 +1,4 @@
-compare_simulations <- function(resultsDir, outdir){
+compare_simulations <- function(resultsDir, dataDir, outDir){
 
   list <- structure(NA,class="result")
   "[<-.result" <- function(x,...,value) {
@@ -12,21 +12,22 @@ compare_simulations <- function(resultsDir, outdir){
     x
   }
 
+
   # ===========================================
   # Compare TrackSig exposures to ground truth
-  simulations <- list.files(outdir)
+  simulations <- list.files(dataDir)
   sel <- grep(x = simulations, "^Simulation")
   simulations <- simulations[sel]
 
   tracksig_dir = "TS_ccfLikelihood_results/"
 
   list[res, gt_exp_l, estim_exp_l] <- TrackSig:::compare_simulation_results(
-      simulations, ground_truth_dir = outdir,
+      simulations, ground_truth_dir = dataDir,
       method_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
       res_file_name = "TrackSig_simulation_results.txt")
 
   res_TrackSig <- res
-  TrackSig:::plot_kl_results(res, "TrackSig")
+  TrackSig:::plot_kl_results(res, paste(outDir, "TrackSig", sep = "/"))
 
   print("Percentage of samples with KL larger than 0.05")
   mean(res$kl > 0.1)
@@ -53,13 +54,13 @@ compare_simulations <- function(resultsDir, outdir){
   # has_sig7[has_sig7 == 0] <- "darkgreen"
   # has_sig7[has_sig7 == 1] <- "magenta"
 
-  pdf("TrackSig_simulation_results_KL_vs_mean.pdf", width = 5, height=5)
+  pdf(paste(outDir, "TrackSig_simulation_results_KL_vs_mean.pdf", sep = "/"), width = 5, height=5)
   plot(res_TrackSig$kl, res_TrackSig$abs_diff_mean, main="TrackSig versus Truth",
      xlab="KL", ylab="mean abs diff",  xlim=c(0, 1), ylim=c(0, 1)) #col=has_sig7)
   #legend('topleft', legend = c("No SBS7", "Has SBS7"), col = c("darkgreen", "magenta"), cex = 0.8, pch = 1)
   dev.off()
 
-  pdf("TrackSig_simulation_results_KL_vs_max.pdf", width = 5, height=5)
+  pdf(paste(outDir, "TrackSig_simulation_results_KL_vs_max.pdf", sep = "/"), width = 5, height=5)
   plot(res_TrackSig$kl, res_TrackSig$abs_diff_max, main="TrackSig versus Truth",
      xlab="KL", ylab="max abs diff", xlim=c(0, 1), ylim=c(0, 1)) # col=has_sig7)
   #legend('topleft', legend = c("No SBS7", "Has SBS7"), col = c("darkgreen", "magenta"), cex = 0.8, pch = 1)
@@ -70,19 +71,19 @@ compare_simulations <- function(resultsDir, outdir){
 
   # ===========================================
   # Compare SciClone exposures to ground truth
-  simulations <- list.files(outdir)
+  simulations <- list.files(dataDir)
   sel <- grep(x = simulations, "^Simulation")
   simulations <- simulations[sel]
 
   sciclone_dir <- "SCDS_results/"
   list[res, gt_exp_l, estim_exp_l] <- TrackSig:::compare_simulation_results(simulations,
-      ground_truth_dir = outdir,
+      ground_truth_dir = dataDir,
       method_results_dir = paste0(sciclone_dir, "/SIMULATED/"),
       res_file_name = "sciclone_simulation_results.txt")
 
   res_SciClone <- res
   estim_exp_l_sciclone <- estim_exp_l
-  TrackSig:::plot_kl_results(res, "SciClone")
+  TrackSig:::plot_kl_results(res, paste(outDir, "SciClone", sep = "/"))
 
   print("sciclone: Percentage of samples with KL larger than 0.05")
   mean(res$kl > 0.05)
@@ -106,13 +107,13 @@ compare_simulations <- function(resultsDir, outdir){
   # has_sig7[has_sig7 == 0] <- "darkgreen"
   # has_sig7[has_sig7 == 1] <- "magenta"
 
-  pdf("SciClone_simulation_results_KL_vs_mean.pdf", width = 5, height=5)
+  pdf(paste(outDir, "SciClone_simulation_results_KL_vs_mean.pdf", sep = "/"), width = 5, height=5)
   plot(res_SciClone$kl, res_SciClone$abs_diff_mean, main="SciClone versus Truth",
      xlab="KL", ylab="mean abs diff", xlim=c(0, 1), ylim=c(0, 1)) #col=has_sig7)
   #legend('topleft', legend = c("No SBS7", "Has SBS7"), col = c("darkgreen", "magenta"), cex = 0.8, pch = 1)
   dev.off()
 
-  pdf("SciClone_simulation_results_KL_vs_max.pdf", width = 5, height=5)
+  pdf(paste(outDir, "SciClone_simulation_results_KL_vs_max.pdf", sep = "/"), width = 5, height=5)
   plot(res_SciClone$kl, res_SciClone$abs_diff_max, main="SciClone versus Truth",
      xlab="KL", ylab="max abs diff", xlim=c(0, 1), ylim=c(0, 1)) #col=has_sig7)
   #legend('topleft', legend = c("No SBS7", "Has SBS7"), col = c("darkgreen", "magenta"), cex = 0.8, pch = 1)
@@ -157,7 +158,7 @@ compare_simulations <- function(resultsDir, outdir){
   correct_tracksig[correct_tracksig == 0] <- "red"
   correct_tracksig[correct_tracksig == 1] <- "darkgreen"
 
-  pdf("sciclone_results_coloured_TrackSig_mean_diff.pdf", width = 5, height=5)
+  pdf(paste(outDir, "sciclone_results_coloured_TrackSig_mean_diff.pdf", sep = "/"), width = 5, height=5)
   plot(res_SciClone[sim_order,]$kl, res_SciClone[sim_order,]$abs_diff_mean,
     main="Sciclone versus Truth",
      xlab="KL", ylab="mean abs diff", col=correct_tracksig,
@@ -165,7 +166,7 @@ compare_simulations <- function(resultsDir, outdir){
   legend('topleft', legend = c("TrackSig: KL > 0.05", "TrackSig: KL < 0.05"), col = c("red", "darkgreen"), cex = 0.8, pch = 1)
   dev.off()
 
-  pdf("sciclone_results_coloured_TrackSig_max_diff.pdf", width = 5, height=5)
+  pdf(paste(outDir, "sciclone_results_coloured_TrackSig_max_diff.pdf", sep = "/"), width = 5, height=5)
   plot(res_SciClone[sim_order,]$kl, res_SciClone[sim_order,]$abs_diff_max,
     main="Sciclone versus Truth",
      xlab="KL", ylab="max abs diff", col=correct_tracksig,
@@ -177,14 +178,14 @@ compare_simulations <- function(resultsDir, outdir){
 
   # Comparison of the KL between TrackSig and SciClone
   sim_order <- intersect(res_SciClone[,1], res_TrackSig[,1])
-  pdf(paste0("TrackSig_vs_SciCLone_simulation_results_KL.pdf"), width = 5, height=5)
+  pdf(paste(outDir, "TrackSig_vs_SciCLone_simulation_results_KL.pdf", sep = "/"), width = 5, height=5)
   plot(res_SciClone[sim_order,]$kl, res_TrackSig[sim_order,]$kl,
      xlab="SciClone KL", ylab="TrackSig KL", xlim=c(0, 0.5), ylim=c(0, 0.5))
   dev.off()
 
   # for depth 30
   sim_order <- intersect(res_SciClone[res_SciClone$depth == 30,1], res_TrackSig[res_TrackSig$depth == 30,1])
-  pdf(paste0("TrackSig_vs_SciCLone_simulation_results_KL_depth_30.pdf"), width = 5, height=5)
+  pdf(paste(outDir, "TrackSig_vs_SciCLone_simulation_results_KL_depth_30.pdf", sep = "/"), width = 5, height=5)
   plot(res_SciClone[sim_order,]$kl, res_TrackSig[sim_order,]$kl,
      xlab="SciClone KL", ylab="TrackSig KL", xlim=c(0, 0.5), ylim=c(0, 0.5))
   dev.off()
@@ -196,7 +197,7 @@ compare_simulations <- function(resultsDir, outdir){
   # simulations_depth1000 <- simulations[grepl("depth1000$", simulations)]
   # Compare change-points
   cp_comparison <- TrackSig:::compare_changepoints(simulations,
-    ground_truth_dir = outdir,
+    ground_truth_dir = dataDir,
     tracksig_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
     sciclone_results_dir = paste0(sciclone_dir, "/SIMULATED/"),
     res_file_name = "cp_comparison.txt",
@@ -303,7 +304,7 @@ compare_simulations <- function(resultsDir, outdir){
   # Finally, rename the folders to SCDS_results_binomial_bmm, SCDS_results_bmm or SCDS_results_gaussian_bmm
 
   #cp_comparison <- TrackSig:::compare_changepoints(simulations,
-  #  ground_truth_dir = outdir,
+  #  ground_truth_dir = dataDir,
   #  tracksig_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
   #  sciclone_results_dir = paste0(c("SCDS_results_binomial", "SCDS_results_bmm") , "/SIMULATED/"),
   #  res_file_name = "cp_comparison.txt",
@@ -365,9 +366,9 @@ compare_simulations <- function(resultsDir, outdir){
 
   # ===========================================
   # Compare results for different bin sizes
-  #outdir <- "data_bin_simulations/"
+  #dataDir <- "data_bin_simulations/"
   #
-  #simulations <- list.files(outdir)
+  #simulations <- list.files(dataDir)
   #sel <- grep(x = simulations, "^Simulation")
   #simulations <- simulations[sel]
   #
@@ -385,7 +386,7 @@ compare_simulations <- function(resultsDir, outdir){
   #
   #  list[res, gt_exp_l, estim_exp_l] <- compare_simulation_results(
   #      simulations_w_bin_size,
-  #      ground_truth_dir = outdir,
+  #      ground_truth_dir = dataDir,
   #      method_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
   #      res_file_name = sprintf("TrackSig_simulation_results_post%d.txt", bin_size))
   #
@@ -434,6 +435,10 @@ compare_simulations <- function(resultsDir, outdir){
   #  main="", xlab="bin size", ylab="mean activity diff", pch=19)
   #dev.off()
 
+  # reset to callingWD
+  setwd(callingWD)
 }
+
+
 # [END]
 
