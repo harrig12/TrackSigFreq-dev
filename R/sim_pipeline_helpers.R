@@ -316,7 +316,7 @@ get_results_per_sim_type <- function(res, method_name) {
     idx <- grepl(type, sapply(res[,1],toString))
 
     if (sum(idx) > 1) {
-      plot_kl_results(res[idx,], "SciClone", sim_type = type)
+      plot_kl_results(res[idx,], method_name, sim_type = type)
     }
     print(paste0("Percentage of samples with KL larger than 0.05 in type ", type))
     print(mean(res[idx,]$kl > 0.05))
