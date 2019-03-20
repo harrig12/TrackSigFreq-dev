@@ -24,7 +24,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   list[res, gt_exp_l, estim_exp_l] <- TrackSig:::compare_simulation_results(
       simulations, ground_truth_dir = dataDir,
       method_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
-      res_file_name = "TrackSig_simulation_results.txt")
+      res_file_name = paste(outDir, "TrackSig_simulation_results.txt", sep = "/"))
 
   res_TrackSig <- res
   TrackSig:::plot_kl_results(res, paste(outDir, "TrackSig", sep = "/"))
@@ -33,7 +33,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   mean(res$kl > 0.1)
 
   print("Average KL per type: TrackSig")
-  avg_kl_per_type_TrackSig <- TrackSig:::get_results_per_sim_type(res, "TrackSig")
+  avg_kl_per_type_TrackSig <- TrackSig:::get_results_per_sim_type(res, paste(outDir, "TrackSig", sep = "/"))
   print(avg_kl_per_type_TrackSig)
 
   # ===========================================
@@ -79,7 +79,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   list[res, gt_exp_l, estim_exp_l] <- TrackSig:::compare_simulation_results(simulations,
       ground_truth_dir = dataDir,
       method_results_dir = paste0(sciclone_dir, "/SIMULATED/"),
-      res_file_name = "sciclone_simulation_results.txt")
+      res_file_name = paste(outDir, "sciclone_simulation_results.txt", sep = "/"))
 
   res_SciClone <- res
   estim_exp_l_sciclone <- estim_exp_l
@@ -89,7 +89,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   mean(res$kl > 0.05)
 
   print("Average KL per type: SciClone")
-  avg_kl_per_type_SciClone <- TrackSig:::get_results_per_sim_type(res_SciClone, "SciClone")
+  avg_kl_per_type_SciClone <- TrackSig:::get_results_per_sim_type(res_SciClone, paste(outDir, "SciClone", sep = "/"))
   print(avg_kl_per_type_SciClone)
 
 
@@ -200,7 +200,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
     ground_truth_dir = dataDir,
     tracksig_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
     sciclone_results_dir = paste0(sciclone_dir, "/SIMULATED/"),
-    res_file_name = "cp_comparison.txt",
+    res_file_name = paste(outDir, "cp_comparison.txt", sep = "/"),
     change_at_cp_threshold = 0.05)
 
   # choose depth 30 only
@@ -435,8 +435,7 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   #  main="", xlab="bin size", ylab="mean activity diff", pch=19)
   #dev.off()
 
-  # reset to callingWD
-  setwd(callingWD)
+
 }
 
 
