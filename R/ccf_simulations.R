@@ -2,6 +2,7 @@
 #'
 #' Functions required for generating simulated data for TrackSig
 #'
+#'
 
 
 toHorizontalMatrix <- function(L)
@@ -370,7 +371,7 @@ create_simulation_set <- function(outdir = "simulations", mut_per_sim = 5000,
 
 	signature_def = load_sim_signatures(signature_file)
 	depth_list <- c(10, 30, 100)
-	
+
 	if (rewrite_annotations) {
 	  # remove simulation annotations (rebuilt upon simulation) and create new ones
 	  unlink(sim_activity_file)
@@ -405,7 +406,7 @@ create_simulation_set <- function(outdir = "simulations", mut_per_sim = 5000,
   print("Simulation type 0a: one cluster")
 	# signatures change in one cluster but not in the other"
 	n_simulations = 50
-	
+
 	for (sim_id in 1:n_simulations) {
 		sig_activities = list()
 
@@ -421,7 +422,7 @@ create_simulation_set <- function(outdir = "simulations", mut_per_sim = 5000,
 		print(c(mut_per_sim))
 
 		for (depth in depth_list) {
-			simulation_name = paste0("Simulation_one_cluster", 
+			simulation_name = paste0("Simulation_one_cluster",
 				sim_id, "_depth", depth)
 			print(paste0("Generating simulation ",simulation_name))
 
@@ -480,7 +481,7 @@ create_simulation_set <- function(outdir = "simulations", mut_per_sim = 5000,
 		print(c(n_mut_clonal, n_mut_subclone1))
 
 		for (depth in depth_list) {
-			simulation_name = paste0("Simulation_two_clusters", 
+			simulation_name = paste0("Simulation_two_clusters",
 				sim_id, "_depth", depth)
 
 			print(paste0("Generating simulation ",simulation_name))
@@ -874,7 +875,7 @@ create_simulation_bin_sizes <- function(outdir = "simulations", mut_per_sim = 50
 			print("Mutation counts per cluster")
 			print(c(mut_per_sim))
 
-			simulation_name = paste0("Simulation_one_cluster", 
+			simulation_name = paste0("Simulation_one_cluster",
 				sim_id, "_bin", bin_size, "_depth", depth)
 			print(paste0("Generating simulation ",simulation_name))
 
@@ -931,7 +932,7 @@ create_simulation_bin_sizes <- function(outdir = "simulations", mut_per_sim = 50
 			print("Mutation counts per cluster")
 			print(c(n_mut_clonal, n_mut_subclone1))
 
-			simulation_name = paste0("Simulation_two_clusters", 
+			simulation_name = paste0("Simulation_two_clusters",
 				sim_id, "_bin", bin_size, "_depth", depth)
 			print(paste0("Generating simulation ",simulation_name))
 
