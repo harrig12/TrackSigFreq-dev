@@ -303,65 +303,65 @@ compare_simulations <- function(resultsDir, dataDir, outDir){
   # For this, run sciclone with three different cluster methods: clusterMethod = "bmm", "gaussian.bmm", "binomial.bmm"
   # Finally, rename the folders to SCDS_results_binomial_bmm, SCDS_results_bmm or SCDS_results_gaussian_bmm
 
-  cp_comparison <- TrackSig:::compare_changepoints(simulations,
-    ground_truth_dir = dataDir,
-    tracksig_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
-    sciclone_results_dir = paste0(c("SCDS_results_binomial", "SCDS_results_bmm") , "/SIMULATED/"),
-    res_file_name = "cp_comparison.txt",
-    change_at_cp_threshold = 0.05)
-
-  depth_types <- c("depth10", "depth30", "depth100")
-  sim_types <- c("one_cluster", "two_clusters",
-      "branching", "cna_plus",
-      "inf_site_viol_plus")
-  method_names <- c("cp_tracksig_adjusted", "cp_SCDS_results_binomial", "cp_SCDS_results_bmm")
-
-  empty_table <- data.frame(matrix(0, ncol = length(sim_types), nrow = length(method_names)))
-  colnames(empty_table) <- sim_types
-  rownames(empty_table) <- method_names
-
-  # cp_summary <- list()
-  # cp_summary[["cp_tracksig_adjusted"]] <- empty_table
-  # cp_summary[["cp_SCDS_results_binomial"]] <- empty_table
-  # cp_summary[["cp_SCDS_results_bmm"]] <- empty_table
-  # cp_summary[["cp_SCDS_results_gaussian_bmm"]] <- empty_table
-
-  res <- list()
-
-  # Compute the same things for over-estimating and under-estimating number of subclones
-  for (d_type in depth_types) {
-    res[[d_type]] <- empty_table
-
-    for (sim_type in sim_types) {
-      idx <- grepl(sim_type, sapply(cp_comparison[,1],toString))
-      idx <- idx &  grepl(paste0(d_type,"$"), sapply(cp_comparison[,1],toString))
-
-      for (name in method_names) {
-        percentage_correct <- mean((cp_comparison[idx,]$n_gt_created_cp == cp_comparison[idx,name]) )
-        res[[d_type]][name, sim_type] <- percentage_correct
-      }
-    }
-  }
-
-  print(res)
-
-  COLORS <- c("#FFFF00", "#FF4A46","#63FFAC","#B79762")
-   "#008941"
-
-  COLORS <- c("#F3766E", "#1FBFC3", "#C280F5")  #"#7CAA1F")
-
-  for (d_type in depth_types) {
-    pdf(paste0("cp_comparison_barplot_", d_type, ".pdf"), width = 7, height=5)
-    par(mar=c(6.1, 4.1, 6.1, 2.1))
-    barplot(as.matrix(res[[d_type]]), beside=T,
-                   col=COLORS[1:nrow(res[[d_type]])],
-                   names.arg= gsub("_", " ", colnames(res[[d_type]])) ) #las=2)
-    legend("topright", inset=c(0,-0.5), xpd=TRUE,  bty="n",
-         legend = c("TrackSig", "SciClone binomial.bmm", "SciClone bmm (default)"),
-         fill = COLORS[(1:nrow(res[[d_type]]))] )
-    dev.off()
-  }
-
+#  cp_comparison <- TrackSig:::compare_changepoints(simulations,
+#    ground_truth_dir = dataDir,
+#    tracksig_results_dir = paste0(tracksig_dir, "/SIMULATED/"),
+#    sciclone_results_dir = paste0(c("SCDS_results_binomial", "SCDS_results_bmm") , "/SIMULATED/"),
+#    res_file_name = "cp_comparison.txt",
+#    change_at_cp_threshold = 0.05)
+#
+#  depth_types <- c("depth10", "depth30", "depth100")
+#  sim_types <- c("one_cluster", "two_clusters",
+#      "branching", "cna_plus",
+#      "inf_site_viol_plus")
+#  method_names <- c("cp_tracksig_adjusted", "cp_SCDS_results_binomial", "cp_SCDS_results_bmm")
+#
+#  empty_table <- data.frame(matrix(0, ncol = length(sim_types), nrow = length(method_names)))
+#  colnames(empty_table) <- sim_types
+#  rownames(empty_table) <- method_names
+#
+#  # cp_summary <- list()
+#  # cp_summary[["cp_tracksig_adjusted"]] <- empty_table
+#  # cp_summary[["cp_SCDS_results_binomial"]] <- empty_table
+#  # cp_summary[["cp_SCDS_results_bmm"]] <- empty_table
+#  # cp_summary[["cp_SCDS_results_gaussian_bmm"]] <- empty_table
+#
+#  res <- list()
+#
+#  # Compute the same things for over-estimating and under-estimating number of subclones
+#  for (d_type in depth_types) {
+#    res[[d_type]] <- empty_table
+#
+#    for (sim_type in sim_types) {
+#      idx <- grepl(sim_type, sapply(cp_comparison[,1],toString))
+#      idx <- idx &  grepl(paste0(d_type,"$"), sapply(cp_comparison[,1],toString))
+#
+#      for (name in method_names) {
+#        percentage_correct <- mean((cp_comparison[idx,]$n_gt_created_cp == cp_comparison[idx,name]) )
+#        res[[d_type]][name, sim_type] <- percentage_correct
+#      }
+#    }
+#  }
+#
+#  print(res)
+#
+#  COLORS <- c("#FFFF00", "#FF4A46","#63FFAC","#B79762")
+#   "#008941"
+#
+#  COLORS <- c("#F3766E", "#1FBFC3", "#C280F5")  #"#7CAA1F")
+#
+#  for (d_type in depth_types) {
+#    pdf(paste0("cp_comparison_barplot_", d_type, ".pdf"), width = 7, height=5)
+#    par(mar=c(6.1, 4.1, 6.1, 2.1))
+#    barplot(as.matrix(res[[d_type]]), beside=T,
+#                   col=COLORS[1:nrow(res[[d_type]])],
+#                   names.arg= gsub("_", " ", colnames(res[[d_type]])) ) #las=2)
+#    legend("topright", inset=c(0,-0.5), xpd=TRUE,  bty="n",
+#         legend = c("TrackSig", "SciClone binomial.bmm", "SciClone bmm (default)"),
+#         fill = COLORS[(1:nrow(res[[d_type]]))] )
+#    dev.off()
+#  }
+#
 
 
   # ===========================================
