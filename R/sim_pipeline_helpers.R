@@ -1,3 +1,14 @@
+list <- structure(NA,class="result")
+"[<-.result" <- function(x,...,value) {
+  args <- as.list(match.call())
+  args <- args[-c(1:2,length(args))]
+  length(value) <- length(args)
+  for(i in seq(along=args)) {
+    a <- args[[i]]
+    if(!missing(a)) eval.parent(substitute(a <- v,list(a=a,v=value[[i]])))
+  }
+  x
+}
 
 kldiv_multinomials <- function(multinom1, multinom2) {
   return(apply(multinom1 * log(multinom1/multinom2),1,sum))
@@ -22,6 +33,7 @@ compare_simulation_results  <- function(simulation_list,
 
     gt_exposures <- read.delim(gt_exposures_file, header=T, stringsAsFactors=F)
     gt_pos = paste0(gt_exposures[,"chromosome"], "_", gt_exposures[,"start"])
+    rownames(gt_exposures) <- gt_pos
 
     # check rownames condition
     if(length(gt_pos) != length(unique(gt_pos))){
@@ -80,7 +92,6 @@ compare_simulation_results  <- function(simulation_list,
 
   results_df <- data.frame(results_df)
   rownames(results_df) <- results_df[,1]
-
   write.table(results_df, file = res_file_name, sep = "\t", row.names=F, quote=F)
 
   return(list(results_df, gt_exposures_list, estim_exposures_list))
@@ -169,6 +180,20 @@ get_max_changes_one_tumor <- function(mixtures, signatures_to_compute, tumor_id,
 }
 
 
+toHorizontalMatrix <- function(L){
+  if (is.vector(L))
+    return(matrix(L, nrow=1))
+  else
+    return(as.matrix(L))
+}
+
+toVerticalMatrix <- function(L)
+{
+  if (is.vector(L))
+    return(matrix(L, ncol=1))
+  else
+    return(as.matrix(L))
+}
 
 remove_cp_with_same_direction <- function(mixtures, change_points) {
   sigs <- rownames(mixtures)
@@ -232,19 +257,19 @@ compare_changepoints  <- function(simulation_list, ground_truth_dir,
 
     # read change-points from sciclone
     # If we ran sciclone using multiple clustering methods, we want to aggregate results from all of them
-#    cp_sciclone <- list()
-#    for (sciclone_results_dir in sciclone_results_dir_list) {
-#      sciclone_cp_file = paste0(sciclone_results_dir, "/", sim, "/phis.txt")
-#
-#      if (!file.exists(sciclone_cp_file)) {
-#        print(sprintf("File %s not found", sciclone_cp_file))
-#        next
-#      }
-#      # counting change-points, not the number of clusters
-#      method_name = paste0("cp_", gsub("([A-z_]*)//*SIMULATED/", "\\1", sciclone_results_dir))
-#      cp_sciclone[[method_name]] <- nrow(read.table(sciclone_cp_file, header=F, stringsAsFactors=F)) - 1
-#    }
-#
+    cp_sciclone <- list()
+    for (sciclone_results_dir in sciclone_results_dir_list) {
+      sciclone_cp_file = paste0(sciclone_results_dir, "/", sim, "/phis.txt")
+
+      if (!file.exists(sciclone_cp_file)) {
+        print(sprintf("File %s not found", sciclone_cp_file))
+        next
+      }
+      # counting change-points, not the number of clusters
+      method_name = paste0("cp_", gsub("([A-z_]*)//*SIMULATED/", "\\1", sciclone_results_dir))
+      cp_sciclone[[method_name]] <- nrow(read.table(sciclone_cp_file, header=F, stringsAsFactors=F)) - 1
+    }
+
     gt_exposures_file = paste0(ground_truth_dir, "/", sim, "/", sim, "_exposures.txt")
 
     if (!file.exists(gt_exposures_file)) {
@@ -263,7 +288,7 @@ compare_changepoints  <- function(simulation_list, ground_truth_dir,
       n_gt_created_cp = 1
     } else if (grepl("one_cluster", sim)) {
       n_gt_created_cp = 0
-    } else if (grepl("three_cluster", sim)) {
+    } else if (grepl("inf_site_viol", sim)) {
       n_gt_created_cp = 2
     } else {
       n_gt_created_cp = 2
@@ -275,9 +300,9 @@ compare_changepoints  <- function(simulation_list, ground_truth_dir,
       n_gt_exposure_cp = n_gt_exposure_cp,
       n_gt_created_cp = n_gt_created_cp)
 
-#    for (i in 1:length(cp_sciclone)) {
-#      d[[names(cp_sciclone)[i]]] <- cp_sciclone[[i]]
-#    }
+    for (i in 1:length(cp_sciclone)) {
+      d[[names(cp_sciclone)[i]]] <- cp_sciclone[[i]]
+    }
 
     results_df <- rbind(results_df, d)
   }
